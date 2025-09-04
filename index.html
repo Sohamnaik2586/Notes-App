@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Notes App</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- jsPDF (for PDF downloads) -->
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <h1>Notes</h1>
+    <div class="actions">
+      <button id="newNoteBtn" title="Create a new note">New</button>
+      <button id="saveNoteBtn" title="Save current note">Save</button>
+      <button id="deleteNoteBtn" title="Delete current note">Delete</button>
+      <button id="downloadPdfBtn" title="Download as PDF">Download PDF</button>
+    </div>
+  </header>
+
+  <main class="app">
+    <aside class="sidebar">
+      <div class="search-wrap">
+        <input id="searchInput" type="search" placeholder="Search notes..." />
+      </div>
+      <ul id="notesList" class="notes-list"></ul>
+    </aside>
+
+    <section class="editor">
+      <input id="noteTitle" class="title-input" type="text" placeholder="Title..." />
+      <textarea id="noteBody" class="body-text" placeholder="Write your note here..."></textarea>
+      <div class="meta"><span id="metaInfo">No note selected</span></div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <span>Local, offline & Secure</span>
+  </footer>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
