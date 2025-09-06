@@ -1,5 +1,5 @@
 // ====== Constants ======
-const STORAGE_KEY = "notes-app:v3-wysiwyg";
+const STORAGE_KEY = "notes-app:v4-checklists";
 const THEME_KEY = "notes-app-theme";
 
 // ====== Model & Storage ======
@@ -94,7 +94,7 @@ function renderEditor() {
   const note = state.notes.find(n => n.id === state.selectedId);
   if (note) {
     noteTitleEl.value = note.title;
-    noteBodyEl.innerHTML = note.body; // Use innerHTML for contenteditable
+    noteBodyEl.innerHTML = note.body;
     updateMetaInfo(note);
   } else {
     noteTitleEl.value = "";
@@ -124,13 +124,7 @@ function toggleEditorEnabledState(enabled) {
 // ====== Actions ======
 function createNote() {
   const now = Date.now();
-  const n = {
-    id: uid(),
-    title: "Untitled",
-    body: "", // Stored as HTML string
-    createdAt: now,
-    updatedAt: now
-  };
+  const n = { id: uid(), title: "Untitled", body: "", createdAt: now, updatedAt: now };
   state.notes.unshift(n);
   state.selectedId = n.id;
   saveNotes(state.notes);
@@ -146,19 +140,14 @@ function saveCurrentNote() {
   state.isSaving = true;
   updateMetaInfo(state.notes[idx]);
 
-  const updatedNote = {
-    ...state.notes[idx],
-    title: noteTitleEl.value.trim() || "Untitled",
-    body: noteBodyEl.innerHTML, // Use innerHTML to save content
-    updatedAt: Date.now()
-  };
+  const updatedNote = { ...state.notes[idx], title: noteTitleEl.value.trim() || "Untitled", body: noteBodyEl.innerHTML, updatedAt: Date.now() };
   state.notes[idx] = updatedNote;
   saveNotes(state.notes);
 
   setTimeout(() => {
     state.isSaving = false;
-    updateMetaInfo(updatedNote); // Update timestamp
-    renderList(); // Update sidebar preview/order
+    updateMetaInfo(updatedNote);
+    renderList();
   }, 300);
 }
 
@@ -181,9 +170,16 @@ function deleteCurrentNote() {
   renderEditor();
 }
 
+// CHANGED: Theme function now targets the html element
 function toggleTheme() {
-  const newTheme = document.body.classList.toggle("light-theme") ? "light" : "dark";
+  const newTheme = document.documentElement.classList.toggle("light-theme") ? "light" : "dark";
   saveTheme(newTheme);
+}
+
+// ADDED: Function to insert a checklist item
+function insertChecklist() {
+  const checklistHtml = `<div class="checklist-item"><input type="checkbox" contenteditable="false" />&nbsp;</div>`;
+  document.execCommand('insertHTML', false, checklistHtml);
 }
 
 async function downloadPDF() {
@@ -208,7 +204,6 @@ async function downloadPDF() {
 
   doc.setTextColor(0);
   doc.setFontSize(12);
-  // CRITICAL: Convert HTML body to plain text for PDF
   const body = stripHtml(note.body || "");
   const lines = doc.splitTextToSize(body, width);
 
@@ -237,15 +232,31 @@ delBtn.addEventListener("click", deleteCurrentNote);
 pdfBtn.addEventListener("click", downloadPDF);
 themeBtn.addEventListener("click", toggleTheme);
 
-// Toolbar button clicks
+// CHANGED: Toolbar listener now handles checklists
 editorToolbar.addEventListener("click", (e) => {
   const button = e.target.closest("button");
   if (!button) return;
-
   const { command, value } = button.dataset;
-  document.execCommand(command, false, value);
-  noteBodyEl.focus(); // Keep focus in the editor
-  debouncedSaveNote(); // Save after formatting
+
+  if (command === 'insertChecklist') {
+    insertChecklist();
+  } else {
+    document.execCommand(command, false, value);
+  }
+  
+  noteBodyEl.focus();
+  debouncedSaveNote();
+});
+
+// ADDED: Listener for checklist interactions
+noteBodyEl.addEventListener('click', (e) => {
+  if (e.target.matches('.checklist-item input[type="checkbox"]')) {
+    const item = e.target.closest('.checklist-item');
+    if (item) {
+      item.classList.toggle('done');
+      debouncedSaveNote();
+    }
+  }
 });
 
 noteTitleEl.addEventListener("input", debouncedSaveNote);
@@ -254,9 +265,7 @@ searchInputEl.addEventListener("input", debouncedRenderList);
 
 // ====== Initialization ======
 function init() {
-  if (loadTheme() === "light") {
-    document.body.classList.add("light-theme");
-  }
+  // REMOVED: Old theme logic is gone from here
   if (!state.selectedId && state.notes.length > 0) {
     state.selectedId = state.notes[0].id;
   }
