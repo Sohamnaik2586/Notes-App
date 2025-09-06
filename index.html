@@ -3,7 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>WYSIWYG Notes App</title>
+  <title>Notes App Pro</title>
+
+  <script>
+    const savedTheme = localStorage.getItem("notes-app-theme") || "dark";
+    if (savedTheme === "light") {
+      document.documentElement.classList.add("light-theme");
+    }
+  </script>
+
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 </head>
@@ -33,15 +41,21 @@
         <div class="meta"><span id="metaInfo">No note selected</span></div>
       </div>
       <div class="editor-toolbar">
-  <button data-command="bold" title="Bold"><b>B</b></button>
-  <button data-command="formatBlock" data-value="H2" title="Heading"><b>H2</b></button>
-  <button data-command="formatBlock" data-value="p" title="Paragraph">P</button>
-  <button data-command="removeFormat" title="Remove Formatting">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-      <path d="M11.646 4.354a.5.5 0 0 1 0 .708L7.707 9l3.939 3.939a.5.5 0 0 1-.708.708L7 9.707l-3.939 3.94a.5.5 0 0 1-.708-.708L6.293 9 2.354 5.061a.5.5 0 1 1 .708-.708L7 8.293l3.939-3.938a.5.5 0 0 1 .707 0zM14 2.5a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-1 0v-10a.5.5 0 0 1 .5-.5z"/>
-    </svg>
-  </button>
-</div>
+        <button data-command="bold" title="Bold"><b>B</b></button>
+        <button data-command="formatBlock" data-value="H2" title="Heading"><b>H2</b></button>
+        <button data-command="formatBlock" data-value="p" title="Paragraph">P</button>
+        <button data-command="insertChecklist" title="Checklist">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+            <path d="M10.97 4.97a.75.75 0 0 1 1.071 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.235.235 0 0 1 .02-.022z"/>
+          </svg>
+        </button>
+        <button data-command="removeFormat" title="Remove Formatting">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M11.646 4.354a.5.5 0 0 1 0 .708L7.707 9l3.939 3.939a.5.5 0 0 1-.708.708L7 9.707l-3.939 3.94a.5.5 0 0 1-.708-.708L6.293 9 2.354 5.061a.5.5 0 1 1 .708-.708L7 8.293l3.939-3.938a.5.5 0 0 1 .707 0zM14 2.5a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-1 0v-10a.5.5 0 0 1 .5-.5z"/>
+          </svg>
+        </button>
+      </div>
     </section>
   </main>
 
