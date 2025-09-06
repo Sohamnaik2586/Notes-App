@@ -4,13 +4,29 @@
 :root {
   --bg: #0b0f14;
   --card: #141a22;
+  --card-alt: #0f151d;
+  --border: #1c2430;
+  --border-hover: #2a3544;
   --muted: #7c8796;
   --text: #e6edf3;
   --accent: #4ca1ff;
   --danger: #ff5c5c;
+  --danger-border: #3a2222;
 }
-html,
-body {
+body.light-theme {
+  --bg: #ffffff;
+  --card: #f8f9fa;
+  --card-alt: #f1f3f5;
+  --border: #dee2e6;
+  --border-hover: #ced4da;
+  --muted: #6c757d;
+  --text: #212529;
+  --accent: #007bff;
+  --danger: #dc3545;
+  --danger-border: #f1c9c9;
+}
+
+html, body {
   height: 100%;
 }
 body {
@@ -18,20 +34,16 @@ body {
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   background: var(--bg);
   color: var(--text);
+  transition: background 0.2s ease, color 0.2s ease;
 }
-.app-header,
-.app-footer {
+
+.app-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  background: #0e141b;
-  border-bottom: 1px solid #1c2430;
-}
-.app-footer {
-  border-top: 1px solid #1c2430;
-  border-bottom: none;
-  opacity: 0.8;
+  background: var(--card-alt);
+  border-bottom: 1px solid var(--border);
 }
 h1 {
   margin: 0;
@@ -42,10 +54,11 @@ h1 {
   margin-left: 8px;
   padding: 8px 12px;
   border-radius: 10px;
-  border: 1px solid #2a3544;
+  border: 1px solid var(--border-hover);
   background: var(--card);
   color: var(--text);
   cursor: pointer;
+  transition: border-color 0.2s ease;
 }
 .actions button:hover {
   border-color: var(--accent);
@@ -55,26 +68,28 @@ h1 {
   display: grid;
   grid-template-columns: 300px 1fr;
   gap: 0;
-  height: calc(100vh - 96px);
+  height: calc(100vh - 57px);
 }
 .sidebar {
-  border-right: 1px solid #1c2430;
-  background: #0f151d;
+  border-right: 1px solid var(--border);
+  background: var(--card-alt);
   display: flex;
   flex-direction: column;
 }
 .search-wrap {
   padding: 10px;
-  border-bottom: 1px solid #1c2430;
+  border-bottom: 1px solid var(--border);
 }
 .search-wrap input {
   width: 100%;
   padding: 10px 12px;
   border-radius: 10px;
-  border: 1px solid #2a3544;
+  border: 1px solid var(--border-hover);
   background: var(--card);
   color: var(--text);
 }
+
+/* Note List Styling */
 .notes-list {
   margin: 0;
   padding: 0;
@@ -83,16 +98,22 @@ h1 {
   height: 100%;
 }
 .notes-list li {
-  border-bottom: 1px solid #1c2430;
+  border-bottom: 1px solid var(--border);
   padding: 10px 12px;
   cursor: pointer;
 }
 .notes-list li.active {
-  background: #16202c;
+  background: var(--card);
   border-left: 3px solid var(--accent);
+}
+.notes-list li:not(.active):hover {
+    background: rgba(128, 128, 128, 0.1);
 }
 .notes-list .title {
   font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .notes-list .preview {
   color: var(--muted);
@@ -104,8 +125,22 @@ h1 {
   font-size: 11px;
   margin-top: 4px;
 }
+.notes-list .empty-state {
+    padding: 20px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    cursor: default;
+}
 
+/* Editor Area Layout */
+.editor-container {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+}
 .editor {
+  flex: 1;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -113,11 +148,12 @@ h1 {
 .title-input {
   width: 100%;
   padding: 14px;
-  font-size: 18px;
+  font-size: 20px;
+  font-weight: bold;
   border: 0;
   outline: none;
   background: transparent;
-  border-bottom: 1px solid #1c2430;
+  border-bottom: 1px solid var(--border);
   color: var(--text);
 }
 .body-text {
@@ -131,29 +167,58 @@ h1 {
   background: transparent;
   resize: none;
   color: var(--text);
+  overflow-y: auto;          /* CHANGE: Ensures only vertical scroll is possible */
+  overflow-wrap: break-word; /* ADD THIS: Forces long lines to wrap */
+}
+.body-text:focus {
+    outline:none;
 }
 .meta {
   padding: 8px 14px;
-  border-top: 1px solid #1c2430;
+  border-top: 1px solid var(--border);
   color: var(--muted);
   font-size: 12px;
+  min-height: 37px;
 }
 
+/* Toolbar Styling */
+.editor-toolbar {
+  width: 50px;
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 10px 0;
+  align-items: center;
+}
+.editor-toolbar button {
+  border: 1px solid var(--border-hover);
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+.editor-toolbar button:hover {
+  border-color: var(--accent);
+}
+
+/* Button variations */
 button#deleteNoteBtn {
-  border-color: #3a2222;
+  border-color: var(--danger-border);
 }
 button#deleteNoteBtn:hover {
   border-color: var(--danger);
+  background: var(--danger);
+  color: white;
 }
+/* Add this to the end of style.css */
 
-@media (max-width: 800px) {
-  .app {
-    grid-template-columns: 1fr;
-  }
-  .sidebar {
-    height: 40vh;
-  }
-  .editor {
-    height: calc(60vh - 0px);
-  }
+/* Fix for editor element spacing */
+#noteBody h2, #noteBody p {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 0;
 }
